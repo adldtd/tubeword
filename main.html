@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>tubeword</title>
+		<meta charset='utf-8'>
+		<meta name='description' content='A site for retrieving youtube links with words.'>
+		<link rel='stylesheet' href='main.css'>
+	</head>
+	
+	<body>
+		<div class='site-title'>
+			<h1>Youtube-Word-Links</h1>
+		</div>
+		
+		<i><p id='input-text'>Enter a word below...</p></i>
+
+		<input id='main-input' type='text' name='word'>
+		
+		<span class='or'>
+			<p>...<b><a id='swap-link' href='#'>or</a></b>...</p>
+		</span>
+		
+		<small><small><p id='note'>Note: bigger words will be less likely to retrieve a word</p></small></small>
+		
+		<br>
+		<input id='rand-word' type='button' name='rand-word' value='Can&#39;t think of a word?'>
+		
+		<br>
+		<img src='loading.gif' id='loading' width='26' height='32'>
+		
+		<p id='about'><a href='/about'>About us...</a></p>
+		
+		<script>
+		var wordEnterMode = true; //By default
+		var swap = document.getElementById('swap-link');
+		var randWord = document.getElementById('rand-word'); //Random word button
+		var mainInput = document.getElementById('main-input'); //Button/text input in the center
+		var inputText = document.getElementById('input-text');
+		var note = document.getElementById('note');
+		
+		
+		
+		swap.onclick = function()
+		{
+			if (wordEnterMode)
+			{
+				inputText.innerHTML = 'Retrieve a random link...';
+				mainInput.type = 'button'; mainInput.value = '';
+				
+				let buttonStyle = mainInput.style;
+				buttonStyle.color = 'white';
+				buttonStyle.backgroundColor = 'red';
+				buttonStyle.borderStyle = 'outset';
+				buttonStyle.borderWidth = 'thick';
+				buttonStyle.borderColor = 'white';
+				buttonStyle.outline = '1px solid black';
+				buttonStyle.fontSize = '2.25em';
+				buttonStyle.width = '5em';
+				
+				note.innerHTML = 'Note: these links have all been pre-selected';
+				if (note.style.color === 'red') note.style.color = 'black';
+				randWord.disabled = true;
+				randWord.style.backgroundColor = '#949494';
+				randWord.style.color = 'black';
+				randWord.style.opacity = '0.5';
+			}
+			else
+			{
+				inputText.innerHTML = 'Enter a word below...';
+				mainInput.type = 'text';
+				
+				let textStyle = mainInput.style;
+				textStyle.color = 'black';
+				textStyle.backgroundColor = 'transparent';
+				textStyle.borderStyle = 'outset';
+				textStyle.borderWidth = 'thick';
+				textStyle.borderColor = 'red';
+				textStyle.outline = 'none';
+				textStyle.fontSize = '2.25em';
+				textStyle.width = '11em';
+				
+				note.innerHTML = 'Note: bigger words will be less likely to retrieve a word';
+				if (note.style.color === 'red') note.style.color = 'black';
+				randWord.disabled = false;
+				randWord.style.backgroundColor = 'red';
+				randWord.style.color = 'white';
+				randWord.style.opacity = '1';
+			}
+			
+			wordEnterMode = !wordEnterMode;
+			return false;
+			
+		}
+
+		
+		
+		randWord.onclick = async function()
+		{
+			if (mainInput.type === 'text') //Error checking; should only work when the main input is set to text
+			{
+				const getRandWord = new XMLHttpRequest(); //Primary AJAX object
+				
+				getRandWord.onload = function()
+				{
+					result = this.responseText;
+					mainInput.value = result; //Give the user a random word from the database to get a link
+				}
+				
+				getRandWord.open('POST', '/randword', true); //Only works when main.html is being hosted on localhost
+				getRandWord.send();
+			}
+		}
+		
+		
+		
+		mainInput.onkeydown = async function() //Get word link
+		{
+			if (event.key === 'Enter' && mainInput.type === 'text') //Only on pressing enter; only when the input is a text box
+			{
+				document.getElementById('loading').style.opacity = 1; //Faux loading screen
+				mainInput.disabled = true; //The user shouldn't be able to send another request while the database is working
+				
+				const getLink = new XMLHttpRequest();
+				
+				getLink.onload = function()
+				{
+					result = this.responseText;
+					
+					document.getElementById('loading').style.opacity = 0;
+					mainInput.disabled = false;
+					
+					if (result === 'NONE' || result === '0' || result === '11' || result === '-1')
+						errorHandler(result);
+					else
+						location.assign('https://www.youtube.com/watch?v=' + result); //Final result, redirect to youtube page
+				}
+				
+				let data = mainInput.value.toLowerCase();
+				
+				getLink.open('POST', '/wordlink', true);
+				getLink.send(data);
+			}
+		}
+		
+		
+		
+		mainInput.onclick = async function() //Get random link; really just a combination of random word and then link
+		{
+			if (mainInput.type === 'button')
+			{
+				document.getElementById('loading').style.opacity = 1;
+				mainInput.disabled = true;
+			
+				const getWord = new XMLHttpRequest();
+				
+				getWord.onload = function()
+				{
+					result = this.responseText;
+					
+					const getLink = new XMLHttpRequest();
+					
+					getLink.onload = function()
+					{
+						result = this.responseText;
+					
+						document.getElementById('loading').style.opacity = 0;
+						mainInput.disabled = false;
+						
+						if (result === 'NONE' || result === '0' || result === '11' || result === '-1') //Error codes
+							errorHandler('999'); //Unexpected error
+						else
+							location.assign('https://www.youtube.com/watch?v=' + result);
+					}
+					
+					getLink.open('POST', '/wordlink', true);
+					getLink.send(result);
+				}
+				
+				getWord.open('POST', '/randword', true);
+				getWord.send();
+			}
+		}
+		
+		
+		var errorHandler = function(errStr) //Changes note based on errors codes recieved from the server; ONLY TO BE CALLED WHEN THERE IS A PRESENT ERROR
+		{
+			switch(errStr)
+			{
+				case 'NONE':
+					note.innerHTML = 'Sorry, but a link for the corresponding word could not be found.';
+					break;
+				case '0':
+					note.innerHTML = 'Please enter something into the text box before sending it.';
+					break;
+				case '11':
+					note.innerHTML = 'Sorry, but the maximum entry length is only 11 characters.';
+					break;
+				case '-1':
+					note.innerHTML = 'No non-English characters allowed.';
+					break;
+				default:
+					note.innerHTML = 'An unexpected error occurred. Please try again.';
+					break;
+			}
+			
+			note.style.color = 'red';
+		}
+		
+		</script>
+	</body>
+</html>

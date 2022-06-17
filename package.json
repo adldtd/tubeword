@@ -1,0 +1,29 @@
+{
+  "name": "tubeword",
+  "version": "1.0.0",
+  "description": "A site for retrieving youtube links with words.",
+  "main": "connect.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node connect.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "tubeword"
+  },
+  "keywords": [
+    "youtube",
+    "links",
+    "words",
+    "tube",
+    "word"
+  ],
+  "author": "adldtd",
+  "license": "MIT",
+  "dependencies": {
+    "express": "4.17.1",
+    "pg": "8.7.3",
+    "body-parser": "1.19.0",
+    "dotenv": "16.0.0"
+  }
+}

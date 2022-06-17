@@ -1,0 +1,103 @@
+
+.site-title {
+	display: block;
+	margin: auto;
+	width: 844px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	background-color: red;
+	border-style: solid;
+	border-color: red;
+	border-radius: 20px;
+	font-family: Helvetica, sans-serif;
+}
+
+h1 {
+	text-align: center;
+	font-size: 5.25em;
+	color: white;
+}
+
+#input-text {
+	text-align: center;
+	font-size: 1.875em;
+}
+
+.or {
+	text-align: center;
+	font-size: 2.25em;
+}
+
+#swap-link {
+	color: red;
+	transition-property: color;
+	transition-duration: 0.2s;
+}
+
+#swap-link:link {
+	text-decoration: none;
+}
+
+#swap-link:visited {
+	text-decoration: none;
+}
+
+#swap-link:hover {
+	color: orange;
+}
+
+
+#main-input {
+	text-align: center;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	border-style: outset;
+	border-width: thick;
+	border-color: red;
+	border-radius: 5px;
+	font-size: 2.25em;
+	font-family: Helvetica, sans-serif;
+	width: 11em;
+}
+
+/*
+#main-input {
+	text-align: center;
+	color: white;
+	display: block;
+	margin-right: auto;
+	margin-left: auto;	//This is to be equivalent to the CSS when the main input is changed from a text box to a button
+	background: red;
+	border-style: outset;
+	border-color: white;
+	border-radius: 5px;
+	outline: 1px solid black;
+	font-size: 2.25em;
+	font-family: Helvetica, sans-serif;
+	width: 5em;
+}
+*/
+
+#note {
+	text-align: center;
+}
+
+#rand-word {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: red;
+	color: white;
+}
+
+#loading {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+	opacity: 0;
+}
+
+#about {
+	text-align: center;
+}
